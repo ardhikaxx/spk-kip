@@ -1,0 +1,763 @@
+PENJELASAN SISTEM PROYEK
+SISTEM PENDUKUNG KEPUTUSAN SELEKSI PENERIMA BEASISWA KIP-K
+MENGGUNAKAN METODE PROMETHEE II
+
+========================================================================
+1. GAMBARAN UMUM SISTEM
+========================================================================
+
+Sistem ini merupakan Sistem Pendukung Keputusan (SPK) untuk membantu proses
+seleksi penerima beasiswa KIP-K di Politeknik Negeri Jember. Sistem dibangun
+dengan metode PROMETHEE II, yaitu salah satu metode Multi Criteria Decision
+Making (MCDM) yang digunakan untuk melakukan perangkingan alternatif
+berdasarkan beberapa kriteria penilaian.
+
+Dalam konteks sistem ini:
+- Alternatif adalah mahasiswa atau pendaftar beasiswa KIP-K.
+- Kriteria adalah faktor-faktor yang digunakan untuk menilai kelayakan
+  pendaftar.
+- Bobot adalah tingkat kepentingan setiap kriteria.
+- Hasil akhir adalah ranking mahasiswa dari yang paling direkomendasikan
+  sampai yang paling tidak direkomendasikan.
+
+Sistem tidak menggantikan keputusan manusia sepenuhnya. Sistem berfungsi
+sebagai alat bantu untuk memberikan rekomendasi yang lebih objektif,
+terstruktur, dan dapat dihitung ulang dengan aturan yang sama.
+
+========================================================================
+2. TUJUAN PEMBUATAN SISTEM
+========================================================================
+
+Tujuan utama sistem ini adalah:
+
+1. Membantu proses seleksi penerima beasiswa KIP-K secara lebih terukur.
+2. Mengolah data pendaftar menjadi nilai kriteria yang dapat dihitung.
+3. Menerapkan metode PROMETHEE II untuk menghasilkan ranking penerima.
+4. Membandingkan hasil rekomendasi sistem dengan data penerima aktual.
+5. Menyediakan output berupa file ranking, model, konfigurasi, validasi,
+   dan visualisasi agar sistem dapat dianalisis kembali.
+
+Secara akademik, sistem ini dapat dijelaskan sebagai implementasi metode
+PROMETHEE II pada kasus seleksi beasiswa berbasis multi-kriteria.
+
+========================================================================
+3. STRUKTUR PROYEK
+========================================================================
+
+Struktur folder utama proyek adalah sebagai berikut:
+
+spk-kip/
+|
+|-- data/
+|   |-- raw/
+|   |   |-- V_Data_Mahasiswa_Full_KIPK.xlsx
+|   |   |-- Mahasiswa_ditetapkan_Politeknik Negeri Jember_20241012.xlsx
+|   |
+|   |-- processed/
+|       |-- data_clean.csv
+|
+|-- output/
+|   |-- hasil_ranking.xlsx
+|   |-- validasi_result.json
+|   |-- model/
+|   |   |-- model_promethee.joblib
+|   |   |-- scaler_config.json
+|   |
+|   |-- figures/
+|       |-- distribusi_kriteria.png
+|       |-- promethee_flow.png
+|       |-- confusion_matrix.png
+|
+|-- spk_kipk_promethee.ipynb
+|-- README.md
+|-- rule-kip.md
+|-- requirements.txt
+
+Penjelasan setiap bagian:
+
+1. data/raw/
+   Folder ini menyimpan data asli yang belum diproses. Data utama adalah
+   file seluruh pendaftar KIP-K dan file data mahasiswa yang telah ditetapkan
+   sebagai penerima.
+
+2. data/processed/
+   Folder ini menyimpan data hasil preprocessing. File data_clean.csv
+   berisi data yang sudah diringkas menjadi kolom identitas dan kriteria
+   C1 sampai C6.
+
+3. output/
+   Folder ini menyimpan seluruh hasil akhir sistem, seperti ranking,
+   validasi, model, konfigurasi, dan grafik.
+
+4. spk_kipk_promethee.ipynb
+   File utama sistem. Semua proses dijalankan di notebook ini, mulai dari
+   membaca data, preprocessing, perhitungan PROMETHEE II, validasi, sampai
+   export output.
+
+5. README.md
+   Dokumen ringkas untuk menjelaskan proyek, cara penggunaan, kriteria,
+   bobot, dan hasil validasi.
+
+6. rule-kip.md
+   Dokumen aturan teknis yang menjelaskan rancangan implementasi sistem.
+
+7. requirements.txt
+   Daftar library Python yang dibutuhkan untuk menjalankan sistem.
+
+========================================================================
+4. DATA YANG DIGUNAKAN
+========================================================================
+
+Sistem menggunakan dua jenis data:
+
+1. Data seluruh pendaftar
+   Nama file:
+   data/raw/V_Data_Mahasiswa_Full_KIPK.xlsx
+
+   Data ini berisi seluruh mahasiswa atau calon mahasiswa yang mendaftar
+   beasiswa KIP-K. Jumlah data yang diproses pada sistem adalah 1005 baris.
+
+2. Data ground truth atau data penerima aktual
+   Nama file:
+   data/raw/Mahasiswa_ditetapkan_Politeknik Negeri Jember_20241012.xlsx
+
+   Data ini berisi daftar mahasiswa yang benar-benar telah ditetapkan sebagai
+   penerima KIP-K. Data ini digunakan sebagai pembanding saat validasi sistem.
+
+Pada hasil validasi terakhir:
+- Jumlah data pendaftar yang dievaluasi: 1005
+- Jumlah label ground truth: 465
+- Jumlah label ground truth yang cocok dengan data pendaftar: 437
+- Jumlah label ground truth yang tidak cocok dengan data pendaftar: 28
+
+Artinya, terdapat 28 NIM pada data penerima aktual yang tidak ditemukan pada
+data pendaftar utama. Karena tidak ada pada data pendaftar, data tersebut
+tidak dapat dievaluasi oleh sistem.
+
+========================================================================
+5. KRITERIA YANG DIGUNAKAN
+========================================================================
+
+Sistem menggunakan 6 kriteria utama, yaitu C1 sampai C6.
+
+Tabel kriteria dan bobot:
+
+Kode | Nama Kriteria             | Bobot | Tipe
+-----|---------------------------|-------|---------
+C1   | Kepemilikan KIP SMA       | 0.04  | Benefit
+C2   | Status DTKS               | 0.17  | Benefit
+C3   | Desil                     | 0.49  | Benefit
+C4   | Penghasilan Orang Tua     | 0.03  | Benefit
+C5   | Status Orang Tua          | 0.24  | Benefit
+C6   | Prestasi                  | 0.03  | Benefit
+
+Total bobot:
+0.04 + 0.17 + 0.49 + 0.03 + 0.24 + 0.03 = 1.00
+
+Semua kriteria bertipe benefit. Artinya semakin tinggi nilai suatu kriteria,
+maka semakin baik atau semakin layak pendaftar tersebut untuk menerima
+beasiswa.
+
+========================================================================
+6. PENJELASAN SETIAP KRITERIA
+========================================================================
+
+6.1 C1 - Kepemilikan KIP SMA
+--------------------------------
+
+C1 digunakan untuk menilai apakah pendaftar memiliki KIP atau bentuk bantuan
+lain yang relevan.
+
+Skor C1:
+- 4 = Memiliki KIP
+- 3 = Tidak memiliki KIP, tetapi termasuk keluarga penerima bantuan sosial
+      lain, seperti bansos, KKS, PKH, atau beasiswa lain
+- 2 = Tidak memiliki KIP, tetapi memiliki SKTM
+- 1 = Tidak memiliki semuanya atau tidak ada informasi yang mendukung
+
+Pada data yang digunakan, tidak ditemukan kolom eksplisit KIP SMA yang
+lengkap. Oleh karena itu, sistem mencari informasi dari beberapa kolom
+fallback seperti sumber_biaya, lembaga, dan jenis_lembaga.
+
+Bobot C1 adalah 0.04. Bobot ini relatif kecil karena informasi KIP pada data
+tidak selalu tersedia secara eksplisit dan tidak cukup kuat sebagai pembeda
+utama dalam data.
+
+6.2 C2 - Status DTKS
+--------------------------------
+
+C2 digunakan untuk menilai apakah pendaftar terdaftar dalam DTKS atau sumber
+data sosial sejenis.
+
+Skor C2:
+- 3 = Terdaftar dalam DTKS
+- 2 = Penerima bantuan sosial
+- 1 = Belum terdaftar atau tidak terdapat informasi pendukung
+
+DTKS merupakan indikator penting dalam seleksi bantuan pendidikan karena
+berkaitan dengan kondisi sosial ekonomi keluarga.
+
+Bobot C2 adalah 0.17.
+
+6.3 C3 - Desil
+--------------------------------
+
+C3 digunakan untuk menilai tingkat desil ekonomi pendaftar. Desil yang lebih
+rendah menunjukkan kondisi ekonomi yang lebih membutuhkan.
+
+Skor C3:
+- 4 = Desil 1
+- 3 = Desil 2
+- 2 = Desil 3
+- 1 = Desil lebih dari 4 atau data kosong
+
+Kriteria ini memiliki bobot terbesar, yaitu 0.49. Hal ini menunjukkan bahwa
+desil menjadi faktor paling dominan dalam penentuan prioritas penerima
+beasiswa.
+
+6.4 C4 - Penghasilan Orang Tua
+--------------------------------
+
+C4 digunakan untuk menilai total penghasilan orang tua. Sistem membaca
+penghasilan ayah dan penghasilan ibu, kemudian menjumlahkannya.
+
+Skor C4:
+- 5 = Total penghasilan <= Rp 1.000.000
+- 4 = Total penghasilan > Rp 1.000.000 sampai <= Rp 2.000.000
+- 3 = Total penghasilan > Rp 2.000.000 sampai <= Rp 3.000.000
+- 2 = Total penghasilan > Rp 3.000.000 sampai <= Rp 4.000.000
+- 1 = Total penghasilan > Rp 4.000.000 atau data tidak valid
+
+Semakin rendah penghasilan orang tua, semakin tinggi skor yang diberikan.
+
+Bobot C4 adalah 0.03.
+
+6.5 C5 - Status Orang Tua
+--------------------------------
+
+C5 digunakan untuk menilai kondisi orang tua pendaftar. Kondisi seperti yatim,
+piatu, atau orang tua tidak bekerja dianggap sebagai faktor yang meningkatkan
+prioritas.
+
+Skor C5:
+- 4 = Yatim piatu
+- 3 = Yatim atau piatu
+- 2 = Orang tua sakit, tidak bekerja, atau memiliki keterbatasan
+- 1 = Orang tua masih bekerja atau tidak ada kondisi khusus
+
+Bobot C5 adalah 0.24. Bobot ini cukup besar karena kondisi orang tua dianggap
+berpengaruh terhadap tingkat kebutuhan mahasiswa.
+
+6.6 C6 - Prestasi
+--------------------------------
+
+C6 digunakan untuk menilai prestasi pendaftar.
+
+Skor C6:
+- 5 = Prestasi tingkat internasional
+- 4 = Prestasi tingkat nasional
+- 3 = Prestasi tingkat provinsi, kabupaten, kota, atau sejenisnya
+- 2 = Prestasi tingkat sekolah atau prestasi umum yang tidak termasuk tingkat
+      di atas
+- 1 = Tidak ada prestasi atau data kosong
+
+Bobot C6 adalah 0.03. Dalam sistem ini prestasi tetap dipertimbangkan, tetapi
+tidak menjadi faktor utama karena seleksi KIP-K lebih menekankan aspek
+kebutuhan ekonomi.
+
+========================================================================
+7. PREPROCESSING DATA
+========================================================================
+
+Preprocessing adalah tahap pengolahan data mentah agar dapat digunakan dalam
+perhitungan PROMETHEE II.
+
+Tahapan preprocessing pada sistem:
+
+1. Membaca data pendaftar dan data penerima aktual.
+2. Mendeteksi kolom penting, seperti NIM, nama, program studi, DTKS, desil,
+   penghasilan orang tua, status orang tua, pekerjaan orang tua, dan prestasi.
+3. Membersihkan NIM agar formatnya seragam.
+4. Menghapus data duplikat berdasarkan NIM.
+5. Menghitung skor C1 sampai C6 berdasarkan aturan skoring.
+6. Menyimpan data hasil preprocessing ke data/processed/data_clean.csv.
+
+Catatan penting:
+Sistem tidak mengisi data kriteria kosong dengan modus sebelum scoring.
+Alasannya, pengisian modus dapat membuat mahasiswa memperoleh skor tinggi
+secara tidak adil hanya karena datanya kosong. Oleh karena itu, data kosong
+pada kriteria diperlakukan secara konservatif, umumnya diberi skor terendah.
+
+Contoh:
+- Desil kosong diberi skor 1.
+- Prestasi kosong diberi skor 1.
+- Informasi KIP yang tidak ditemukan diberi skor 1.
+
+Pendekatan ini lebih aman karena tidak menaikkan skor pendaftar tanpa bukti
+data yang jelas.
+
+========================================================================
+8. METODE PROMETHEE II
+========================================================================
+
+PROMETHEE II adalah metode pengambilan keputusan multi-kriteria yang
+menghasilkan ranking lengkap dari seluruh alternatif.
+
+Langkah umum PROMETHEE II:
+
+1. Menentukan alternatif
+   Alternatif dalam sistem ini adalah mahasiswa pendaftar KIP-K.
+
+2. Menentukan kriteria
+   Kriteria yang digunakan adalah C1 sampai C6.
+
+3. Menentukan bobot
+   Setiap kriteria memiliki bobot sesuai tingkat kepentingannya.
+
+4. Membentuk matriks keputusan
+   Matriks keputusan berisi skor setiap mahasiswa pada setiap kriteria.
+
+5. Menghitung preferensi antar alternatif
+   Setiap mahasiswa dibandingkan dengan mahasiswa lain pada setiap kriteria.
+
+6. Menghitung Leaving Flow
+   Leaving Flow menunjukkan seberapa besar suatu alternatif mengungguli
+   alternatif lain.
+
+7. Menghitung Entering Flow
+   Entering Flow menunjukkan seberapa besar suatu alternatif dikalahkan oleh
+   alternatif lain.
+
+8. Menghitung Net Flow
+   Net Flow adalah selisih antara Leaving Flow dan Entering Flow.
+
+9. Melakukan ranking
+   Alternatif dengan Net Flow tertinggi mendapat ranking paling atas.
+
+========================================================================
+9. RUMUS PROMETHEE II YANG DIGUNAKAN
+========================================================================
+
+9.1 Fungsi Preferensi
+--------------------------------
+
+Sistem menggunakan fungsi preferensi sederhana:
+
+P(a,b) = 1 jika nilai a lebih besar dari nilai b
+P(a,b) = 0 jika nilai a tidak lebih besar dari nilai b
+
+Artinya, jika mahasiswa A memiliki nilai lebih tinggi daripada mahasiswa B
+pada suatu kriteria, maka A dianggap lebih unggul pada kriteria tersebut.
+
+9.2 Indeks Preferensi Agregat
+--------------------------------
+
+Indeks preferensi agregat dihitung dengan menjumlahkan preferensi pada semua
+kriteria yang telah dikalikan dengan bobot.
+
+Secara sederhana:
+
+pi(a,b) = total dari [bobot kriteria x preferensi(a,b)]
+
+Nilai pi(a,b) menunjukkan tingkat keunggulan alternatif a terhadap alternatif b.
+
+9.3 Leaving Flow
+--------------------------------
+
+Leaving Flow menunjukkan seberapa kuat alternatif a mengungguli alternatif
+lain.
+
+Rumus:
+
+Phi_plus(a) = jumlah pi(a,b) untuk semua b / (n - 1)
+
+Semakin besar Phi_plus, semakin banyak alternatif lain yang dikalahkan oleh
+alternatif tersebut.
+
+9.4 Entering Flow
+--------------------------------
+
+Entering Flow menunjukkan seberapa kuat alternatif a dikalahkan oleh alternatif
+lain.
+
+Rumus:
+
+Phi_minus(a) = jumlah pi(b,a) untuk semua b / (n - 1)
+
+Semakin besar Phi_minus, semakin banyak alternatif lain yang mengungguli
+alternatif tersebut.
+
+9.5 Net Flow
+--------------------------------
+
+Net Flow adalah nilai akhir PROMETHEE II yang digunakan untuk ranking.
+
+Rumus:
+
+Net_Flow(a) = Phi_plus(a) - Phi_minus(a)
+
+Interpretasi:
+- Net Flow tinggi berarti alternatif lebih layak.
+- Net Flow rendah berarti alternatif kurang layak.
+
+========================================================================
+10. PROSES RANKING
+========================================================================
+
+Setelah Net Flow dihitung, seluruh mahasiswa diurutkan dari Net Flow tertinggi
+ke Net Flow terendah.
+
+Jika terdapat nilai Net Flow yang sama, sistem menggunakan tie-breaker atau
+aturan pengurutan tambahan berdasarkan kriteria:
+
+1. C3 - Desil
+2. C5 - Status Orang Tua
+3. C2 - Status DTKS
+4. C4 - Penghasilan Orang Tua
+5. C1 - Kepemilikan KIP SMA
+6. C6 - Prestasi
+
+Urutan ini digunakan agar ranking tetap stabil dan konsisten ketika terdapat
+nilai Net Flow yang sama.
+
+Output ranking disimpan pada:
+
+output/hasil_ranking.xlsx
+
+Kolom pada file hasil ranking:
+- NIM
+- Nama
+- Program_Studi
+- C1
+- C2
+- C3
+- C4
+- C5
+- C6
+- Phi_Plus
+- Phi_Minus
+- Net_Flow
+- Rank
+- Layak
+- Status_Rekomendasi
+
+Kolom Layak bernilai True jika mahasiswa masuk kuota aktif.
+Kolom Status_Rekomendasi berisi:
+- Direkomendasikan
+- Tidak Direkomendasikan
+
+========================================================================
+11. KUOTA PENERIMA
+========================================================================
+
+Pada notebook, nilai KUOTA diset sebagai None.
+
+Artinya, untuk validasi historis, sistem otomatis menggunakan jumlah penerima
+aktual yang cocok dengan data pendaftar. Pada data ini, kuota aktif adalah 437.
+
+Jika sistem digunakan untuk tahun berjalan, nilai KUOTA dapat diganti secara
+manual sesuai kuota resmi dari institusi.
+
+Contoh:
+KUOTA = 437
+
+Jika KUOTA diisi manual, maka sistem akan mengambil ranking teratas sebanyak
+nilai kuota tersebut sebagai rekomendasi penerima.
+
+========================================================================
+12. VALIDASI SISTEM
+========================================================================
+
+Validasi dilakukan dengan membandingkan hasil rekomendasi sistem dengan data
+penerima aktual.
+
+Label aktual:
+- y_true = 1 jika NIM mahasiswa ada pada data penerima aktual
+- y_true = 0 jika NIM mahasiswa tidak ada pada data penerima aktual
+
+Label prediksi:
+- y_pred = 1 jika mahasiswa direkomendasikan sistem
+- y_pred = 0 jika mahasiswa tidak direkomendasikan sistem
+
+Metrik validasi yang digunakan:
+
+1. Accuracy
+   Mengukur proporsi prediksi yang benar dari seluruh data.
+
+2. Precision
+   Mengukur seberapa tepat rekomendasi sistem. Precision tinggi berarti
+   sebagian besar yang direkomendasikan memang termasuk penerima aktual.
+
+3. Recall
+   Mengukur seberapa banyak penerima aktual yang berhasil ditemukan oleh
+   sistem.
+
+4. F1-score
+   Rata-rata harmonis dari precision dan recall.
+
+5. ROC-AUC
+   Mengukur kemampuan model dalam membedakan kelas diterima dan tidak diterima
+   berdasarkan skor Net Flow.
+
+6. Average Precision
+   Mengukur kualitas ranking untuk kelas positif atau penerima aktual.
+
+========================================================================
+13. HASIL VALIDASI TERBARU
+========================================================================
+
+Hasil validasi sistem terakhir adalah:
+
+Jumlah data evaluasi              : 1005
+Kuota aktif                       : 437
+Jumlah label ground truth         : 465
+Jumlah label cocok dengan data    : 437
+Jumlah label tidak cocok          : 28
+
+Metrik:
+- Accuracy          : 0.7632 atau 76.32%
+- Precision         : 0.7277 atau 72.77%
+- Recall            : 0.7277 atau 72.77%
+- F1-score          : 0.7277 atau 72.77%
+- ROC-AUC           : 0.8084 atau 80.84%
+- Average Precision : 0.7292 atau 72.92%
+
+Confusion matrix:
+
+                  Prediksi Tidak Layak   Prediksi Layak
+Aktual Tidak      449                    119
+Aktual Layak      119                    318
+
+Penjelasan confusion matrix:
+
+1. True Negative (TN) = 449
+   Mahasiswa yang tidak ditetapkan sebagai penerima aktual dan sistem juga
+   tidak merekomendasikan.
+
+2. False Positive (FP) = 119
+   Mahasiswa yang tidak ada pada data penerima aktual, tetapi sistem
+   merekomendasikan.
+
+3. False Negative (FN) = 119
+   Mahasiswa yang ada pada data penerima aktual, tetapi sistem tidak
+   merekomendasikan.
+
+4. True Positive (TP) = 318
+   Mahasiswa yang ada pada data penerima aktual dan sistem juga
+   merekomendasikan.
+
+Status kelayakan implementasi:
+Sistem dinyatakan layak implementasi karena accuracy, precision, recall, dan
+F1-score masing-masing berada di atas batas minimum 70%.
+
+========================================================================
+14. PENJELASAN KENAPA HASIL TIDAK 100 PERSEN
+========================================================================
+
+Sistem tidak menghasilkan prediksi 100 persen benar karena data yang tersedia
+tidak selalu memiliki pembeda yang cukup untuk setiap mahasiswa.
+
+Pada hasil validasi, terdapat:
+- 51 profil kriteria campuran
+- Minimum error teoritis jika hanya memakai kriteria saat ini: 209
+
+Maksud profil kriteria campuran:
+Ada beberapa mahasiswa yang memiliki nilai C1 sampai C6 sama persis, tetapi
+status aktualnya berbeda. Sebagian diterima, sebagian tidak diterima.
+
+Jika dua mahasiswa memiliki skor kriteria yang sama, sistem tidak memiliki
+dasar objektif tambahan untuk membedakan keduanya. Karena itu, kesalahan tidak
+dapat dihilangkan sepenuhnya hanya dengan enam kriteria yang tersedia.
+
+Untuk mendapatkan hasil 100 persen, sistem harus menggunakan informasi lain
+yang belum tersedia, misalnya:
+- Kuota per program studi
+- Hasil survei lapangan
+- Nilai wawancara
+- Dokumen pendukung ekonomi keluarga
+- Verifikasi rumah tangga
+- Prioritas kebijakan institusi
+- Data penetapan aktual sebagai label langsung
+
+Namun, jika sistem menggunakan data penetapan aktual sebagai acuan langsung,
+maka sistem tidak lagi melakukan prediksi, melainkan hanya menyalin hasil
+penetapan.
+
+========================================================================
+15. OUTPUT SISTEM
+========================================================================
+
+Sistem menghasilkan beberapa file output:
+
+1. output/hasil_ranking.xlsx
+   Berisi ranking seluruh mahasiswa berdasarkan metode PROMETHEE II.
+
+2. output/validasi_result.json
+   Berisi hasil evaluasi sistem, seperti accuracy, precision, recall,
+   F1-score, ROC-AUC, confusion matrix, dan status layak implementasi.
+
+3. output/model/model_promethee.joblib
+   Berisi paket model PROMETHEE yang menyimpan bobot, kriteria, kuota, dan
+   metadata model.
+
+4. output/model/scaler_config.json
+   Berisi konfigurasi kriteria, bobot, mapping sub-kriteria, kuota, dan
+   tie-breaker.
+
+5. output/figures/distribusi_kriteria.png
+   Grafik distribusi nilai pada setiap kriteria.
+
+6. output/figures/promethee_flow.png
+   Grafik visualisasi Leaving Flow, Entering Flow, dan Net Flow.
+
+7. output/figures/confusion_matrix.png
+   Grafik confusion matrix hasil validasi.
+
+========================================================================
+16. PENJELASAN FILE UTAMA NOTEBOOK
+========================================================================
+
+Notebook spk_kipk_promethee.ipynb terdiri dari beberapa tahap:
+
+Tahap 0 - Konfigurasi
+Berisi import library, path data, path output, kuota, bobot, mapping
+sub-kriteria, dan fungsi utilitas.
+
+Tahap 1 - Load Data Mentah
+Membaca data pendaftar dan data ground truth dari folder data/raw.
+
+Tahap 2 - Preprocessing
+Membersihkan data, mendeteksi kolom, menghapus duplikat, dan mengubah data
+teks menjadi skor numerik C1 sampai C6.
+
+Tahap 3 - Penentuan Kriteria dan Pembobotan
+Menampilkan tabel kriteria, memvalidasi total bobot, menampilkan statistik
+deskriptif, dan membuat grafik distribusi kriteria.
+
+Tahap 4 - Perhitungan PROMETHEE II
+Menghitung matriks preferensi, Leaving Flow, Entering Flow, Net Flow, dan
+ranking awal.
+
+Tahap 5 - Ranking Hasil
+Mengurutkan hasil akhir, menentukan status Layak berdasarkan kuota, dan
+menyimpan hasil ranking.
+
+Tahap 6 - Validasi Model
+Membandingkan hasil sistem dengan data penerima aktual, menghitung metrik
+evaluasi, membuat confusion matrix, dan menentukan status layak implementasi.
+
+Tahap 7 - Export Model dan Hasil
+Menyimpan model, konfigurasi, ranking, validasi, dan grafik ke folder output.
+
+========================================================================
+17. LIBRARY YANG DIGUNAKAN
+========================================================================
+
+Library utama yang digunakan:
+
+1. pandas
+   Digunakan untuk membaca Excel/CSV, mengolah data, membuat DataFrame, dan
+   export hasil.
+
+2. numpy
+   Digunakan untuk operasi numerik, array, perhitungan matriks, dan flow.
+
+3. matplotlib
+   Digunakan untuk membuat grafik.
+
+4. seaborn
+   Digunakan untuk visualisasi yang lebih informatif, khususnya confusion
+   matrix.
+
+5. scikit-learn
+   Digunakan untuk menghitung metrik evaluasi seperti accuracy, precision,
+   recall, F1-score, ROC-AUC, dan confusion matrix.
+
+6. joblib
+   Digunakan untuk menyimpan paket model PROMETHEE.
+
+7. openpyxl
+   Digunakan oleh pandas untuk membaca dan menulis file Excel.
+
+========================================================================
+18. KELEBIHAN SISTEM
+========================================================================
+
+Kelebihan sistem:
+
+1. Proses seleksi menjadi lebih terstruktur.
+2. Setiap mahasiswa dinilai menggunakan aturan kriteria yang sama.
+3. Sistem menghasilkan ranking lengkap, bukan hanya klasifikasi layak/tidak.
+4. Bobot kriteria dapat disesuaikan.
+5. Hasil dapat divalidasi menggunakan data penerima aktual.
+6. Output tersimpan dalam bentuk Excel, JSON, model, dan grafik.
+7. Sistem dapat dijalankan ulang dengan data baru.
+8. Proses perhitungan dapat dijelaskan secara matematis melalui PROMETHEE II.
+
+========================================================================
+19. KEKURANGAN DAN BATASAN SISTEM
+========================================================================
+
+Keterbatasan sistem:
+
+1. Hasil sangat bergantung pada kelengkapan dan kualitas data.
+2. Tidak semua faktor seleksi nyata tersedia dalam dataset.
+3. Beberapa mahasiswa memiliki nilai C1 sampai C6 yang sama, tetapi hasil
+   aktualnya berbeda.
+4. Sistem belum memasukkan kuota per program studi.
+5. Sistem belum memasukkan hasil survei lapangan atau wawancara.
+6. Sistem belum menggunakan verifikasi dokumen manual.
+7. Sistem tidak dapat menjamin prediksi 100 persen benar.
+
+Keterbatasan ini penting dijelaskan dalam skripsi agar pembaca memahami bahwa
+SPK adalah alat bantu keputusan, bukan pengganti penuh proses seleksi.
+
+========================================================================
+20. KESIMPULAN SISTEM
+========================================================================
+
+Berdasarkan hasil implementasi, sistem SPK seleksi penerima beasiswa KIP-K
+dengan metode PROMETHEE II berhasil menghasilkan ranking mahasiswa berdasarkan
+enam kriteria utama, yaitu kepemilikan KIP SMA, status DTKS, desil,
+penghasilan orang tua, status orang tua, dan prestasi.
+
+Hasil validasi menunjukkan bahwa sistem memperoleh:
+- Accuracy 76.32%
+- Precision 72.77%
+- Recall 72.77%
+- F1-score 72.77%
+- ROC-AUC 80.84%
+
+Karena metrik utama berada di atas batas minimum 70%, sistem dapat dinyatakan
+layak sebagai alat bantu implementasi awal. Namun, sistem tetap memiliki
+keterbatasan karena terdapat data mahasiswa dengan profil kriteria yang sama
+tetapi status penerimaan aktual berbeda.
+
+Dengan demikian, sistem ini dapat digunakan sebagai dasar rekomendasi seleksi
+beasiswa, sedangkan keputusan akhir tetap dapat mempertimbangkan kebijakan
+institusi dan verifikasi tambahan.
+
+========================================================================
+21. PENJELASAN SINGKAT
+========================================================================
+
+Sistem yang saya bangun adalah Sistem Pendukung Keputusan untuk seleksi
+penerima beasiswa KIP-K menggunakan metode PROMETHEE II. Sistem ini mengolah
+data pendaftar menjadi enam kriteria, yaitu kepemilikan KIP SMA, status DTKS,
+desil, penghasilan orang tua, status orang tua, dan prestasi. Setiap kriteria
+diberi bobot, kemudian setiap mahasiswa dibandingkan satu sama lain untuk
+menghasilkan nilai Leaving Flow, Entering Flow, dan Net Flow.
+
+Nilai Net Flow digunakan sebagai dasar ranking. Mahasiswa dengan Net Flow
+tertinggi ditempatkan pada ranking atas dan direkomendasikan sebagai penerima
+sesuai kuota. Pada validasi historis, sistem menggunakan kuota aktif 437
+mahasiswa dan dibandingkan dengan data penerima aktual. Hasil validasi
+menunjukkan accuracy 76.32%, precision 72.77%, recall 72.77%, dan F1-score
+72.77%. Karena semua metrik utama melebihi 70%, sistem dinyatakan layak
+digunakan sebagai alat bantu seleksi.
+
+Meskipun demikian, sistem belum dapat menghasilkan prediksi 100 persen benar
+karena masih terdapat mahasiswa dengan nilai kriteria yang sama tetapi status
+aktualnya berbeda. Oleh karena itu, sistem ini sebaiknya digunakan sebagai
+alat bantu rekomendasi, bukan sebagai satu-satunya dasar keputusan akhir.
+
