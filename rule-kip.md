@@ -242,7 +242,7 @@ Langkah yang wajib dijalankan secara berurutan:
         > 2.000.000–3.000.000  → 3
         > 3.000.000–4.000.000  → 2
         > 4.000.000            → 1
-2f. Pastikan semua kolom C1–C6 bertipe numerik (int atau float)
+2f. Pastikan semua kolom kriteria C1–C6 bertipe numerik (int atau float)
 2g. Simpan hasil ke CLEAN_PATH (data/processed/data_clean.csv)
 ```
 

@@ -93,3 +93,5 @@ Dengan kuota aktif 437 mahasiswa:
 | ROC-AUC | 80.84% |
 
 Status: **layak implementasi** karena accuracy, precision, recall, dan F1-score sudah melewati target minimum 70%.
+
+Catatan: validasi terbaru masih memiliki 119 false positive dan 119 false negative. Nol kesalahan tidak dapat dijamin hanya dari enam kriteria yang tersedia karena masih ada profil kriteria identik dengan status aktual berbeda.

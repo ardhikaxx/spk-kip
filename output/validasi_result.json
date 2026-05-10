@@ -21,6 +21,8 @@
       318
     ]
   ],
+  "mixed_criteria_profiles": 51,
+  "minimum_errors_if_only_current_criteria": 209,
   "implementation_minimums": {
     "accuracy": 0.7,
     "precision": 0.7,
