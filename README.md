@@ -79,3 +79,17 @@ Notebook akan menghasilkan:
 - Visualisasi dalam folder `output/figures/`
 - Hasil validasi dalam `output/validasi_result.json`
 - Gambar Confusion Matrix dalam `output/figures/confusion_matrix.png`
+
+## Hasil Validasi Terbaru
+
+Dengan kuota aktif 437 mahasiswa:
+
+| Metrik | Nilai |
+|--------|-------|
+| Accuracy | 76.32% |
+| Precision | 72.77% |
+| Recall | 72.77% |
+| F1-score | 72.77% |
+| ROC-AUC | 80.84% |
+
+Status: **layak implementasi** karena accuracy, precision, recall, dan F1-score sudah melewati target minimum 70%.
