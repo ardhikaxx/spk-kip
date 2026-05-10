@@ -27,7 +27,8 @@ spk-kip/
 │   ├── validasi_result.json                         ← metrik evaluasi model (auto-generated)
 │   └── figures/
 │       ├── distribusi_kriteria.png                  ← grafik distribusi nilai tiap kriteria
-│       └── promethee_flow.png                       ← grafik Leaving vs Entering Flow
+│       ├── promethee_flow.png                       ← grafik Leaving vs Entering Flow
+│       └── confusion_matrix.png                     ← heatmap Confusion Matrix validasi
 │
 ├── spk_kipk_promethee.ipynb                         ← FILE UTAMA (satu notebook lengkap)
 ├── rule-kip.md                                      ← dokumen aturan teknis
@@ -71,3 +72,4 @@ Notebook akan menghasilkan:
 - Konfigurasi dalam `output/model/scaler_config.json`
 - Visualisasi dalam folder `output/figures/`
 - Hasil validasi dalam `output/validasi_result.json`
+- Gambar Confusion Matrix dalam `output/figures/confusion_matrix.png`

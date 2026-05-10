@@ -1,0 +1,73 @@
+{
+  "criteria": {
+    "C1": {
+      "name": "Kepemilikan KIP SMA",
+      "weight": 0.3,
+      "type": "benefit"
+    },
+    "C2": {
+      "name": "Status DTKS",
+      "weight": 0.2,
+      "type": "benefit"
+    },
+    "C3": {
+      "name": "Desil",
+      "weight": 0.2,
+      "type": "benefit"
+    },
+    "C4": {
+      "name": "Penghasilan Orang Tua",
+      "weight": 0.1,
+      "type": "benefit"
+    },
+    "C5": {
+      "name": "Status Orang Tua",
+      "weight": 0.1,
+      "type": "benefit"
+    },
+    "C6": {
+      "name": "Prestasi",
+      "weight": 0.1,
+      "type": "benefit"
+    }
+  },
+  "sub_criteria_map": {
+    "C1": {
+      "Memiliki KIP": 4,
+      "Tidak memiliki KIP, tetapi termasuk keluarga penerima bantuan sosial lain": 3,
+      "Tidak memiliki KIP, tetapi memiliki SKTM dari pihak berwenang": 2,
+      "Tidak memiliki semuanya": 1
+    },
+    "C2": {
+      "Terdaftar dalam DTKS": 3,
+      "Penerima bantuan sosial": 2,
+      "Belum terdaftar": 1
+    },
+    "C3": {
+      "Desil 1": 4,
+      "Desil 2": 3,
+      "Desil 3": 2,
+      "Desil > 4": 1
+    },
+    "C4": {
+      "<= Rp 1.000.000": 5,
+      "> Rp 1.000.000 s.d. <= Rp 2.000.000": 4,
+      "> Rp 2.000.000 s.d. <= Rp 3.000.000": 3,
+      "> Rp 3.000.000 s.d. <= Rp 4.000.000": 2,
+      "> Rp 4.000.000": 1
+    },
+    "C5": {
+      "Yatim Piatu": 4,
+      "Yatim / Piatu": 3,
+      "Orang tua sakit / tidak bekerja": 2,
+      "Orang tua masih bekerja": 1
+    },
+    "C6": {
+      "Internasional": 5,
+      "Nasional": 4,
+      "Provinsi / Kota": 3,
+      "Sekolah": 2,
+      "Tidak ada": 1
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.6029850746268657,
+  "precision": 0.88,
+  "recall": 0.10068649885583524,
+  "f1_score": 0.1806981519507187,
+  "confusion_matrix": [
+    [
+      562,
+      6
+    ],
+    [
+      393,
+      44
+    ]
+  ],
+  "layak_implementasi": false
+}

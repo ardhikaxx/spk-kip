@@ -41,7 +41,8 @@ spk-kipk/
 │   ├── validasi_result.json                         ← metrik evaluasi model (auto-generated)
 │   └── figures/
 │       ├── distribusi_kriteria.png                  ← grafik distribusi nilai tiap kriteria
-│       └── promethee_flow.png                       ← grafik Leaving vs Entering Flow
+│       ├── promethee_flow.png                       ← grafik Leaving vs Entering Flow
+│       └── confusion_matrix.png                     ← heatmap Confusion Matrix validasi
 │
 ├── spk_kipk_promethee.ipynb                         ← ★ FILE UTAMA (satu notebook lengkap)
 ├── rule-kip.md                                      ← dokumen aturan ini
@@ -188,6 +189,7 @@ OUT_MODEL       = "output/model/model_promethee.joblib"
 OUT_CONFIG      = "output/model/scaler_config.json"
 OUT_FIG_DIST    = "output/figures/distribusi_kriteria.png"
 OUT_FIG_FLOW    = "output/figures/promethee_flow.png"
+OUT_FIG_CM      = "output/figures/confusion_matrix.png"
 
 # Kuota penerima (sesuaikan dengan kebijakan institusi)
 KUOTA = 50
@@ -341,6 +343,8 @@ F1-Score   = 2 × (Precision × Recall) / (Precision + Recall)
 ```
 
 - Tampilkan Confusion Matrix sebagai heatmap (seaborn `heatmap` dengan `annot=True`).
+- Simpan heatmap Confusion Matrix ke `OUT_FIG_CM`
+  (`output/figures/confusion_matrix.png`).
 - Tampilkan Classification Report lengkap.
 - Cetak kesimpulan otomatis:
 
@@ -383,6 +387,7 @@ File yang wajib diekspor:
 | `scaler_config.json`      | `output/model/`   | Dictionary CRITERIA + SUB_CRITERIA_MAP lengkap    |
 | `hasil_ranking.xlsx`      | `output/`         | Seluruh mahasiswa + Phi_Plus + Phi_Minus + Net_Flow + Rank + Layak |
 | `validasi_result.json`    | `output/`         | Accuracy, Precision, Recall, F1, Confusion Matrix |
+| `confusion_matrix.png`    | `output/figures/` | Heatmap Confusion Matrix hasil validasi |
 
 Struktur `scaler_config.json`:
 
