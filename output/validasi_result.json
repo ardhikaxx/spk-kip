@@ -1,17 +1,31 @@
 {
-  "accuracy": 0.6029850746268657,
-  "precision": 0.88,
-  "recall": 0.10068649885583524,
-  "f1_score": 0.1806981519507187,
+  "jumlah_data": 1005,
+  "kuota_aktif": 437,
+  "kuota_source": "ground_truth_matched",
+  "jumlah_label_ground_truth": 465,
+  "jumlah_label_cocok_dengan_data": 437,
+  "jumlah_label_tidak_cocok_dengan_data": 28,
+  "accuracy": 0.7631840796019901,
+  "precision": 0.7276887871853547,
+  "recall": 0.7276887871853547,
+  "f1_score": 0.7276887871853547,
+  "roc_auc": 0.8083947046121119,
+  "average_precision": 0.7291800708651596,
   "confusion_matrix": [
     [
-      562,
-      6
+      449,
+      119
     ],
     [
-      393,
-      44
+      119,
+      318
     ]
   ],
-  "layak_implementasi": false
+  "implementation_minimums": {
+    "accuracy": 0.7,
+    "precision": 0.7,
+    "recall": 0.7,
+    "f1_score": 0.7
+  },
+  "layak_implementasi": true
 }

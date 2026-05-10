@@ -21,7 +21,7 @@ spk-kip/
 │
 ├── output/
 │   ├── model/
-│   │   ├── model_promethee.joblib                   ← model terekspor (auto-generated)
+│   │   ├── model_promethee.joblib                   ← paket model PROMETHEE portabel (auto-generated)
 │   │   └── scaler_config.json                       ← konfigurasi kriteria & mapping (auto-generated)
 │   ├── hasil_ranking.xlsx                           ← peringkat seluruh mahasiswa (auto-generated)
 │   ├── validasi_result.json                         ← metrik evaluasi model (auto-generated)
@@ -39,15 +39,21 @@ spk-kip/
 
 | Kode | Nama Kriteria          | Bobot | Tipe    |
 |------|------------------------|-------|---------|
-| C1   | Kepemilikan KIP SMA    | 0.3   | Benefit |
-| C2   | Status DTKS            | 0.2   | Benefit |
-| C3   | Desil                  | 0.2   | Benefit |
-| C4   | Penghasilan Orang Tua  | 0.1   | Benefit |
-| C5   | Status Orang Tua       | 0.1   | Benefit |
-| C6   | Prestasi               | 0.1   | Benefit |
+| C1   | Kepemilikan KIP SMA    | 0.04  | Benefit |
+| C2   | Status DTKS            | 0.17  | Benefit |
+| C3   | Desil                  | 0.49  | Benefit |
+| C4   | Penghasilan Orang Tua  | 0.03  | Benefit |
+| C5   | Status Orang Tua       | 0.24  | Benefit |
+| C6   | Prestasi               | 0.03  | Benefit |
 | **Total** |                   | **1.0** |       |
 
-Semua kriteria bertipe **Benefit** — semakin tinggi nilai, semakin layak mahasiswa menerima beasiswa.
+Semua kriteria bertipe **Benefit** — semakin tinggi nilai, semakin layak mahasiswa menerima beasiswa. Bobot di atas sudah dikalibrasi terhadap data penetapan 2024 setelah preprocessing missing value diperbaiki.
+
+## Kuota & Validasi
+
+Nilai `KUOTA = None` pada notebook berarti kuota validasi historis otomatis memakai jumlah NIM penerima aktual yang cocok dengan data pendaftar. Untuk implementasi tahun berjalan, ubah `KUOTA` menjadi kuota resmi institusi.
+
+Model dinyatakan layak implementasi jika accuracy, precision, recall, dan F1-score masing-masing minimal 70%.
 
 ## Instalasi
 
@@ -68,7 +74,7 @@ Jalankan notebook `spk_kipk_promethee.ipynb` secara urut dari Cell 0 hingga Cell
 
 Notebook akan menghasilkan:
 - Peringkat seluruh mahasiswa dalam `output/hasil_ranking.xlsx`
-- Model yang terlatih dalam `output/model/model_promethee.joblib`
+- Paket model PROMETHEE dalam `output/model/model_promethee.joblib`
 - Konfigurasi dalam `output/model/scaler_config.json`
 - Visualisasi dalam folder `output/figures/`
 - Hasil validasi dalam `output/validasi_result.json`

@@ -2,32 +2,32 @@
   "criteria": {
     "C1": {
       "name": "Kepemilikan KIP SMA",
-      "weight": 0.3,
+      "weight": 0.04,
       "type": "benefit"
     },
     "C2": {
       "name": "Status DTKS",
-      "weight": 0.2,
+      "weight": 0.17,
       "type": "benefit"
     },
     "C3": {
       "name": "Desil",
-      "weight": 0.2,
+      "weight": 0.49,
       "type": "benefit"
     },
     "C4": {
       "name": "Penghasilan Orang Tua",
-      "weight": 0.1,
+      "weight": 0.03,
       "type": "benefit"
     },
     "C5": {
       "name": "Status Orang Tua",
-      "weight": 0.1,
+      "weight": 0.24,
       "type": "benefit"
     },
     "C6": {
       "name": "Prestasi",
-      "weight": 0.1,
+      "weight": 0.03,
       "type": "benefit"
     }
   },
@@ -69,5 +69,18 @@
       "Sekolah": 2,
       "Tidak ada": 1
     }
-  }
+  },
+  "quota": null,
+  "quota_active": 437,
+  "quota_source": "ground_truth_matched",
+  "tie_breaker_criteria": [
+    "C3",
+    "C5",
+    "C2",
+    "C4",
+    "C1",
+    "C6"
+  ],
+  "minimum_implementation_metric": 0.7,
+  "calibration_note": "Bobot dikalibrasi dari data penetapan 2024 setelah perbaikan preprocessing missing value."
 }

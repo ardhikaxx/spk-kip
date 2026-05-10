@@ -35,7 +35,7 @@ spk-kipk/
 │
 ├── output/
 │   ├── model/
-│   │   ├── model_promethee.joblib                   ← model terekspor (auto-generated)
+│   │   ├── model_promethee.joblib                   ← paket model PROMETHEE portabel (auto-generated)
 │   │   └── scaler_config.json                       ← konfigurasi kriteria & mapping (auto-generated)
 │   ├── hasil_ranking.xlsx                           ← peringkat seluruh mahasiswa (auto-generated)
 │   ├── validasi_result.json                         ← metrik evaluasi model (auto-generated)
@@ -75,12 +75,12 @@ joblib>=1.3
 
 | Kode | Nama Kriteria          | Bobot | Tipe    |
 |------|------------------------|-------|---------|
-| C1   | Kepemilikan KIP SMA    | 0.3   | Benefit |
-| C2   | Status DTKS            | 0.2   | Benefit |
-| C3   | Desil                  | 0.2   | Benefit |
-| C4   | Penghasilan Orang Tua  | 0.1   | Benefit |
-| C5   | Status Orang Tua       | 0.1   | Benefit |
-| C6   | Prestasi               | 0.1   | Benefit |
+| C1   | Kepemilikan KIP SMA    | 0.04  | Benefit |
+| C2   | Status DTKS            | 0.17  | Benefit |
+| C3   | Desil                  | 0.49  | Benefit |
+| C4   | Penghasilan Orang Tua  | 0.03  | Benefit |
+| C5   | Status Orang Tua       | 0.24  | Benefit |
+| C6   | Prestasi               | 0.03  | Benefit |
 | **Total** |                   | **1.0** |       |
 
 Semua kriteria bertipe **Benefit** — semakin tinggi nilai, semakin layak
@@ -191,17 +191,17 @@ OUT_FIG_DIST    = "output/figures/distribusi_kriteria.png"
 OUT_FIG_FLOW    = "output/figures/promethee_flow.png"
 OUT_FIG_CM      = "output/figures/confusion_matrix.png"
 
-# Kuota penerima (sesuaikan dengan kebijakan institusi)
-KUOTA = 50
+# Kuota penerima (None = otomatis dari ground truth historis yang cocok)
+KUOTA = None
 
 # Konfigurasi kriteria & bobot
 CRITERIA = {
-    "C1": {"name": "Kepemilikan KIP SMA",  "weight": 0.3, "type": "benefit"},
-    "C2": {"name": "Status DTKS",           "weight": 0.2, "type": "benefit"},
-    "C3": {"name": "Desil",                 "weight": 0.2, "type": "benefit"},
-    "C4": {"name": "Penghasilan Orang Tua", "weight": 0.1, "type": "benefit"},
-    "C5": {"name": "Status Orang Tua",      "weight": 0.1, "type": "benefit"},
-    "C6": {"name": "Prestasi",              "weight": 0.1, "type": "benefit"},
+    "C1": {"name": "Kepemilikan KIP SMA",  "weight": 0.04, "type": "benefit"},
+    "C2": {"name": "Status DTKS",           "weight": 0.17, "type": "benefit"},
+    "C3": {"name": "Desil",                 "weight": 0.49, "type": "benefit"},
+    "C4": {"name": "Penghasilan Orang Tua", "weight": 0.03, "type": "benefit"},
+    "C5": {"name": "Status Orang Tua",      "weight": 0.24, "type": "benefit"},
+    "C6": {"name": "Prestasi",              "weight": 0.03, "type": "benefit"},
 }
 
 # Mapping sub-kriteria teks → nilai numerik
@@ -231,9 +231,10 @@ Langkah yang wajib dijalankan secara berurutan:
 ```
 2a. Deteksi kolom kriteria secara fleksibel (toleransi variasi nama kolom)
 2b. Hapus baris duplikat berdasarkan kolom NIM
-2c. Tangani nilai kosong (missing values):
-      - Kolom kategori/teks → isi dengan modus
-      - Kolom numerik       → isi dengan median
+2c. Tangani nilai kosong (missing values) secara konservatif:
+      - Kolom identitas boleh diisi placeholder untuk tampilan
+      - Kolom kriteria tidak boleh diisi modus sebelum scoring
+      - Nilai kosong pada kriteria diberi skor terendah/default sesuai fungsi skoring
 2d. Konversi kolom teks → nilai numerik sesuai tabel skoring (Bagian 5)
 2e. Konversi kolom penghasilan (angka rupiah) → skor 1–5:
         ≤ 1.000.000            → 5
@@ -349,10 +350,14 @@ F1-Score   = 2 × (Precision × Recall) / (Precision + Recall)
 - Cetak kesimpulan otomatis:
 
 ```python
-if accuracy >= 0.70:
-    print("✅ Model LAYAK diimplementasikan (akurasi ≥ 70%)")
+layak_implementasi = all(
+    metric >= 0.70
+    for metric in [accuracy, precision, recall, f1]
+)
+if layak_implementasi:
+    print("Model LAYAK diimplementasikan")
 else:
-    print("⚠️  Model BELUM layak — tinjau ulang bobot atau nilai KUOTA")
+    print("Model BELUM layak - tinjau ulang bobot, preprocessing, atau nilai KUOTA")
 ```
 
 Target metrik minimum agar model dinyatakan layak:
@@ -383,10 +388,10 @@ File yang wajib diekspor:
 
 | File                      | Path              | Isi                                               |
 |---------------------------|-------------------|---------------------------------------------------|
-| `model_promethee.joblib`  | `output/model/`   | Objek kelas PROMETHEE (weights + criteria)        |
-| `scaler_config.json`      | `output/model/`   | Dictionary CRITERIA + SUB_CRITERIA_MAP lengkap    |
+| `model_promethee.joblib`  | `output/model/`   | Paket model PROMETHEE portabel (weights + criteria + metadata) |
+| `scaler_config.json`      | `output/model/`   | Dictionary CRITERIA, SUB_CRITERIA_MAP, kuota, tie-breaker, dan catatan kalibrasi |
 | `hasil_ranking.xlsx`      | `output/`         | Seluruh mahasiswa + Phi_Plus + Phi_Minus + Net_Flow + Rank + Layak |
-| `validasi_result.json`    | `output/`         | Accuracy, Precision, Recall, F1, Confusion Matrix |
+| `validasi_result.json`    | `output/`         | Accuracy, Precision, Recall, F1, ROC-AUC, Average Precision, Confusion Matrix |
 | `confusion_matrix.png`    | `output/figures/` | Heatmap Confusion Matrix hasil validasi |
 
 Struktur `scaler_config.json`:
@@ -394,12 +399,12 @@ Struktur `scaler_config.json`:
 ```json
 {
   "criteria": {
-    "C1": { "name": "Kepemilikan KIP SMA",  "weight": 0.3, "type": "benefit" },
-    "C2": { "name": "Status DTKS",           "weight": 0.2, "type": "benefit" },
-    "C3": { "name": "Desil",                 "weight": 0.2, "type": "benefit" },
-    "C4": { "name": "Penghasilan Orang Tua", "weight": 0.1, "type": "benefit" },
-    "C5": { "name": "Status Orang Tua",      "weight": 0.1, "type": "benefit" },
-    "C6": { "name": "Prestasi",              "weight": 0.1, "type": "benefit" }
+    "C1": { "name": "Kepemilikan KIP SMA",  "weight": 0.04, "type": "benefit" },
+    "C2": { "name": "Status DTKS",           "weight": 0.17, "type": "benefit" },
+    "C3": { "name": "Desil",                 "weight": 0.49, "type": "benefit" },
+    "C4": { "name": "Penghasilan Orang Tua", "weight": 0.03, "type": "benefit" },
+    "C5": { "name": "Status Orang Tua",      "weight": 0.24, "type": "benefit" },
+    "C6": { "name": "Prestasi",              "weight": 0.03, "type": "benefit" }
   },
   "sub_criteria_map": {
     "C1": { "Memiliki KIP": 4, "...": "..." },
