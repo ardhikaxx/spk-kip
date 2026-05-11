@@ -741,7 +741,7 @@ institusi dan verifikasi tambahan.
 21. PENJELASAN SINGKAT
 ========================================================================
 
-Sistem yang saya bangun adalah Sistem Pendukung Keputusan untuk seleksi
+Sistem yang dibangun adalah Sistem Pendukung Keputusan untuk seleksi
 penerima beasiswa KIP-K menggunakan metode PROMETHEE II. Sistem ini mengolah
 data pendaftar menjadi enam kriteria, yaitu kepemilikan KIP SMA, status DTKS,
 desil, penghasilan orang tua, status orang tua, dan prestasi. Setiap kriteria
