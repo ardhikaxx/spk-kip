@@ -9,8 +9,8 @@
   "precision": 0.7276887871853547,
   "recall": 0.7276887871853547,
   "f1_score": 0.7276887871853547,
-  "roc_auc": 0.8083947046121119,
-  "average_precision": 0.7291800708651596,
+  "roc_auc": 0.8089788732394365,
+  "average_precision": 0.7297273842715231,
   "confusion_matrix": [
     [
       449,
@@ -21,8 +21,8 @@
       318
     ]
   ],
-  "mixed_criteria_profiles": 51,
-  "minimum_errors_if_only_current_criteria": 209,
+  "mixed_criteria_profiles": 47,
+  "minimum_errors_if_only_current_criteria": 220,
   "implementation_minimums": {
     "accuracy": 0.7,
     "precision": 0.7,
