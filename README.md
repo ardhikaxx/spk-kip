@@ -51,7 +51,7 @@ Semua kriteria bertipe **Benefit** — semakin tinggi nilai, semakin layak mahas
 
 ## Kuota & Validasi
 
-Nilai `KUOTA = None` pada notebook berarti kuota validasi historis otomatis memakai jumlah NIM penerima aktual yang cocok dengan data pendaftar. Untuk implementasi tahun berjalan, ubah `KUOTA` menjadi kuota resmi institusi.
+Nilai `KUOTA = None` pada notebook berarti kuota validasi historis otomatis memakai jumlah NIM penerima aktual yang cocok dengan data pendaftar, lalu dialokasikan per Program Studi. Untuk implementasi tahun berjalan, ubah `KUOTA` menjadi kuota resmi institusi.
 
 Model dinyatakan layak implementasi jika accuracy, precision, recall, dan F1-score masing-masing minimal 70%.
 
@@ -82,16 +82,16 @@ Notebook akan menghasilkan:
 
 ## Hasil Validasi Terbaru
 
-Dengan kuota aktif 437 mahasiswa:
+Dengan kuota aktif 437 mahasiswa dan ranking per Program Studi:
 
 | Metrik | Nilai |
 |--------|-------|
-| Accuracy | 76.32% |
-| Precision | 72.77% |
-| Recall | 72.77% |
-| F1-score | 72.77% |
-| ROC-AUC | 80.84% |
+| Accuracy | 83.68% |
+| Precision | 81.24% |
+| Recall | 81.24% |
+| F1-score | 81.24% |
+| ROC-AUC | 83.28% |
 
 Status: **layak implementasi** karena accuracy, precision, recall, dan F1-score sudah melewati target minimum 70%.
 
-Catatan: validasi terbaru masih memiliki 119 false positive dan 119 false negative. Nol kesalahan tidak dapat dijamin hanya dari enam kriteria yang tersedia karena masih ada profil kriteria identik dengan status aktual berbeda.
+Catatan: validasi terbaru masih memiliki 82 false positive dan 82 false negative. Nol kesalahan tidak dapat dijamin hanya dari enam kriteria yang tersedia karena masih ada profil kriteria identik dengan status aktual berbeda.
